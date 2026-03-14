@@ -1397,8 +1397,11 @@ static int cs_8409_apple_resume(struct hda_codec *codec)
 {
         myprintk("snd_hda_intel: cs_8409_apple_resume\n");
         // code copied from default resume patch ops
-	if (codec->patch_ops.init)
-		codec->patch_ops.init(codec);
+	{
+		struct cs8409_spec *spec = codec->spec;
+		if (spec && spec->variant_ops && spec->variant_ops->init)
+			spec->variant_ops->init(codec);
+	}
 	snd_hda_regmap_sync(codec);
         myprintk("snd_hda_intel: end cs_8409_apple_resume\n");
         return 0;
@@ -1720,7 +1723,7 @@ static const struct hda_codec_ops cs_8409_apple_patch_ops = {
 	.build_controls = cs_8409_apple_build_controls,
 	.build_pcms = cs_8409_apple_build_pcms,
 	.init = cs_8409_apple_init,
-	.free = cs_8409_apple_free,
+	.remove = cs_8409_apple_free,
 	.unsol_event = cs_8409_cs42l83_jack_unsol_event,
 #ifdef CONFIG_PM
         .resume = cs_8409_apple_resume,
@@ -2588,10 +2591,10 @@ static int patch_cs8409_apple(struct hda_codec *codec)
 
         if (explicit)
                {
-               //codec->patch_ops = cs_8409_apple_patch_ops_explicit;
+               //spec->variant_ops = &cs_8409_apple_patch_ops_explicit;
                }
         else
-               codec->patch_ops = cs_8409_apple_patch_ops;
+               spec->variant_ops = &cs_8409_apple_patch_ops;
 
 
 	// not sure about these
@@ -2730,10 +2733,10 @@ static int patch_cs8409_apple(struct hda_codec *codec)
 #else
         if (explicit)
                {
-               //codec->patch_ops = cs_8409_apple_patch_ops_explicit;
+               //spec->variant_ops = &cs_8409_apple_patch_ops_explicit;
                }
         else
-               codec->patch_ops = cs_8409_apple_patch_ops;
+               spec->variant_ops = &cs_8409_apple_patch_ops;
 #endif
 
         // moved to post auto config

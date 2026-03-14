@@ -362,6 +362,8 @@ struct cs8409_spec {
 	unsigned int init_done:1;
 	unsigned int build_ctrl_done:1;
 
+	const struct hda_codec_ops *variant_ops;
+
 #ifdef APPLE_CODECS
 
 	// additional data for Apple 8409 system
